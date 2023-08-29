@@ -2,18 +2,19 @@ package com.shu.iot.springlog;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.shu.iot.springlog.common.Mapping;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 public class LogTest {
     @Test
     public void test01(){
-        save1("1号机","超声波","test");
+        save1("1号机","超声波","中文");
     }
 
     public void save1(String firstName,String secondName,String data) {
@@ -44,10 +45,149 @@ public class LogTest {
         JSONObject totalData = new JSONObject();
         totalData.put("status",0);
         totalData.put("msg","");
-        JSONArray data = new JSONArray();
+        JSONObject data = new JSONObject();
+        data.put("conbineNum",1 );
+        JSONArray superHeaders = new JSONArray();
         JSONObject o1 = new JSONObject();
-        o1.put("conbineNum",1 );
+        o1.put("colspan",1);
+        superHeaders.add(o1);
+        JSONObject o2 = new JSONObject();
+        o2.put("name","超声波");
+        o2.put("colspan",2);
+        superHeaders.add(o2);
+        JSONObject o3 = new JSONObject();
+        o3.put("name","修正仪");
+        o3.put("colspan",2);
+        superHeaders.add(o3);
+        JSONObject o4 = new JSONObject();
+        o4.put("name","命令检测");
+        o4.put("colspan",2);
+        superHeaders.add(o4);
+        JSONObject j1 = new JSONObject();
+        j1.put("name","膜式表");
+        j1.put("colspan",2);
+        superHeaders.add(j1);
+        JSONObject j2 = new JSONObject();
+        j2.put("name","预付费");
+        j2.put("colspan",2);
+        superHeaders.add(j2);
+        data.put("superHeaders",superHeaders);
+        JSONArray columns = new JSONArray();
+        JSONObject o5 = new JSONObject();
+        o5.put("name","工作站");
+        o5.put("id","type");
+        columns.add(o5);
+        JSONObject o6 = new JSONObject();
+        o6.put("name","最近更新时间");
+        o6.put("id","time1");
+        columns.add(o6);
+        JSONObject o7 = new JSONObject();
+        o7.put("name","运行状态");
+        o7.put("id","status1");
+        columns.add(o7);
+        JSONObject o8 = new JSONObject();
+        o8.put("name","最近更新时间");
+        o8.put("id","time2");
+        columns.add(o8);
+        JSONObject o9 = new JSONObject();
+        o9.put("name","运行状态");
+        o9.put("id","status2");
+        columns.add(o9);
+        JSONObject o10 = new JSONObject();
+        o10.put("name","最近更新时间");
+        o10.put("id","time3");
+        columns.add(o10);
+        JSONObject o11 = new JSONObject();
+        o11.put("name","运行状态");
+        o11.put("id","status3");
+        columns.add(o11);
+        JSONObject o12 = new JSONObject();
+        o12.put("name","最近更新时间");
+        o12.put("id","time4");
+        columns.add(o12);
+        JSONObject o13 = new JSONObject();
+        o13.put("name","运行状态");
+        o13.put("id","status4");
+        columns.add(o13);
+        data.put("columns", columns);
+        totalData.put("data",data);
+        System.out.println(totalData.toJSONString());
+    }
 
+    public String getNameFromFile(File f){
+        String[] strs = f.getPath().split("/");
+        String name = strs[strs.length-1];
+        return name;
+    }
+
+    public String convertTimeName(String s){
+        if (s.contains("manager")){
+            return "todo";
+        }
+        if (s.contains("csb")){
+            return "time1";
+        }
+        if (s.contains("xzy")){
+            return "time2";
+        }
+        if (s.contains("ml")){
+            return "time3";
+        }
+        if (s.contains("msb")){
+            return "time4";
+        }
+        if (s.contains("yff")){
+            return "time5";
+        }
+        return "error";
+    }
+
+    public String convertStatusName(String s){
+        if (s.contains("manager")){
+            return "todo";
+        }
+        if (s.contains("csb")){
+            return "status1";
+        }
+        if (s.contains("xzy")){
+            return "status2";
+        }
+        if (s.contains("ml")){
+            return "status3";
+        }
+        if (s.contains("msb")){
+            return "status4";
+        }
+        if (s.contains("yff")){
+            return "status5";
+        }
+        return "error";
+    }
+    @Test
+    public void test03( ){
+        String path = "./log";
+        File file = new File(path);
+        File[] fs = file.listFiles();
+        List<Map<String,String >> result = new ArrayList<>();
+        for (int i = 0 ; i < fs.length; i++){// 工作站层面
+            File f = fs[i];
+            if (f.isDirectory()){
+                Map<String,String> map = new HashMap<>();
+                String stationName = getNameFromFile(f);
+                map.put("type",Mapping.mapping.get(stationName));
+                File[] plats = f.listFiles();
+                for (int j = 0 ; j < plats.length; j++){// 检测软件层面
+                    File plat = plats[j];
+                    String platFileName = getNameFromFile(plat);
+                    map.put(convertTimeName(platFileName),String.format("%d",plat.lastModified()));
+                    map.put(convertStatusName(platFileName),"mock数据");
+                }
+                result.add(map);
+            }
+        }
+        for (int i = 0 ; i < result.size() ; i++){
+            System.out.println(result.get(i));
+        }
     }
 }
 
@@ -187,5 +327,92 @@ public class LogTest {
       }
     ]
   }
+}
+ */
+
+
+/*
+{
+  "msg": "",
+  "data": {
+    "superHeaders": [
+      {
+        "colspan": 1
+      },
+      {
+        "colspan": 2,
+        "name": "超声波"
+      },
+      {
+        "name": "修正仪",
+        "colspan":2
+      },
+      {
+        "colspan": 2,
+        "name": "命令检测"
+      }
+    ],
+    "conbineNum": 1,
+    "columns": [
+      {
+        "name": "工作站",
+        "id": "type"
+      },
+      {
+        "name": "最近更新时间",
+        "id": "time1"
+      },
+      {
+        "name": "运行状态",
+        "id": "status1"
+      },
+      {
+        "name": "最近更新时间",
+        "id": "time2"
+      },
+      {
+        "name": "运行状态",
+        "id": "status2"
+      },
+      {
+        "name": "最近更新时间",
+        "id": "time3"
+      },
+      {
+        "name": "运行状态",
+        "id": "status3"
+      },
+      {
+        "name": "最近更新时间",
+        "id": "time4"
+      },
+      {
+        "name": "运行状态",
+        "id": "status4"
+      },
+      {
+        "name": "最近更新时间",
+        "id": "time5"
+      },
+      {
+        "name": "运行状态",
+        "id": "status5"
+      }
+    ],
+    "rows":[
+       {
+        "type": "1号机",
+        "time1": 6888,
+        "status1": 6,
+        "time2": 3954,
+        "status2": 86,
+        "time3": 7366,
+        "status3": 55,
+        "time4": 2241,
+        "status4": 16,
+      }
+    ]
+  },
+  "status": 0
 }
  */

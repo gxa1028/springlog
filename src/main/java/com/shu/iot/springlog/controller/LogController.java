@@ -20,15 +20,15 @@ public class LogController {
     @RequestMapping(value = "/{workStationId}/{platName}",method = RequestMethod.POST)
     @ResponseBody
     public String dataUpload(@PathVariable("workStationId")String workStationId, @PathVariable("platName")String platName,
-                           @RequestBody String data){
+                           @RequestBody byte[] data){
         logger.info("data=",data);
-        logService.save(workStationId,platName,data);
+        logService.save(workStationId,platName,new String(data));
         return "success";
     }
 
-//    @RequestMapping(value = "/fetch",method = RequestMethod.GET)
-//    @ResponseBody
-//    public String fetchAllData(){
-//
-//    }
+    @RequestMapping(value = "/fetch",method = RequestMethod.GET)
+    @ResponseBody
+    public String fetchAllData(){
+        return logService.fetchAllData();
+    }
 }
